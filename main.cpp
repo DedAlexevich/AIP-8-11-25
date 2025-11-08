@@ -22,6 +22,15 @@ size_t getLen(const int* a, const int* b)
   return t;
 }
 
+size_t getSize(size_t n1, size_t n2, size_t m1, size_t m2, size_t i )
+{
+  size_t min = n1 > n2 ? n2 : n1;
+  if (i < min) {
+    return m1+m2;
+  }
+  return n1 > n2 ? m1 : m2;
+}
+
 void show_matrix(int** a, size_t n, size_t m)
 {
   for (size_t i = 0; i < n; ++i) {
