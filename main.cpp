@@ -3,10 +3,29 @@
 int* resize(const int* a, size_t k, size_t d, int filler);
 int* transpon(const int* a, size_t n, size_t m);
 
+size_t getLen(const int* a, const int* b)
+{
+  size_t t = 0;
+  size_t i = 0;
+  while (a[i] != '\0') {
+    ++t;
+    ++i;
+  }
+  if (b == nullptr) {
+    return t;
+  }
+  i = 0;
+  while (b[i] !='\0') {
+    ++t;
+    ++i;
+  }
+  return t;
+}
+
 void show_matrix(int** a, size_t n, size_t m)
 {
   for (size_t i = 0; i < n; ++i) {
-    for (size_t j = 0; j < m; ++j) {
+    for (size_t j = 0; j < getLen(a[i], nullptr); ++j) {
       std::cout << a[i][j] <<'\t';
     }
     std::cout << '\n';
@@ -21,24 +40,34 @@ void deleting(int** mat, size_t created)
 }
 
 
+
 int** concat_rows(const int* const* lhs, size_t n1, size_t m1,
 const int* const* rhs, size_t n2, size_t m2)
 {
-  size_t newRows = std::min(n1,n2);
+  size_t newRows = std::max(n1,n2);
   int** matr = new int*[newRows];
   for (size_t i = 0; i < newRows; ++i) {
-    matr[i] = new int[m1+m2];
+    try {
+      matr[i] = new int[getLen(lhs[i], rhs[i])]{};
+    } catch (const std::bad_alloc &e) {
+      deleting(matr, i);
+      throw;
+    }
   }
 
-  for (size_t i = 0; i < newRows; ++i) {
+  for (size_t i = 0; i < n1; ++i) {
     for (size_t j = 0; j < m1; ++j) {
       matr[i][j] = lhs[i][j];
     }
   }
 
-  for (size_t i = 0; i < newRows; ++i) {
+  for (size_t i = 0; i < n2; ++i) {
     for (size_t j = 0; j < m2; ++j) {
-      matr[i][j+m1] = rhs[i][j];
+      if (i < n1) {
+        matr[i][j+m1] = rhs[i][j];
+      } else {
+        matr[i][j] = rhs[i][j];
+      }
     }
   }
   show_matrix(matr, newRows, m1+m2);
@@ -67,7 +96,7 @@ int main()
 
   deleting(a, 2);
   deleting(b, 3);
-  deleting(n, 2);
+  deleting(n, 3);
 
 }
 
